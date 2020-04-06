@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/b11"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:textColor="@color/textColor2"
+            android:layout_marginRight="40px"
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/textSize1"
+            android:text="@string/account" />
+
+        <EditText
+            android:textColor="@drawable/edittext_state"
+            android:id="@+id/et1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:textSize="@dimen/textSize1"
+            android:inputType="textPersonName" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginBottom="20px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:textColor="@color/textColor2"
+            android:layout_marginRight="40px"
+            android:id="@+id/tv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/textSize1"
+            android:text="@string/password" />
+
+        <EditText
+            android:textColor="@drawable/edittext_state"
+            android:id="@+id/et2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:textSize="@dimen/textSize1"
+            android:inputType="textPassword" />
+    </LinearLayout>
+
+    <TextView
+        android:textColor="#704EAA"
+        android:textSize="@dimen/textSize1"
+        android:layout_marginBottom="20px"
+        android:id="@+id/tv3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <CheckBox
+            android:id="@+id/checkBox8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="60px"
+            android:outlineSpotShadowColor="#ff00D5"
+            android:shadowColor="#7945D5"
+            android:text="记住密码" />
+
+        <CheckBox
+            android:id="@+id/checkBox9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60px"
+            android:outlineSpotShadowColor="#ff00D5"
+            android:shadowColor="#7945D5"
+            android:text="自动登录" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="60px"
+        android:layout_marginBottom="80px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:background="@drawable/button_state"
+            android:alpha="50"
+            android:textColor="@color/buttonColor1"
+            android:layout_marginRight="100px"
+            android:id="@+id/b1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/buttonSize1"
+            android:text="@string/login" />
+
+        <Button
+            android:layout_marginLeft="100px"
+            android:alpha="50"
+            android:background="@drawable/button_state"
+            android:textColor="@color/buttonColor1"
+            android:id="@+id/b2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/buttonSize1"
+            android:text="@string/register" />
+    </LinearLayout>
+
+</LinearLayout>
