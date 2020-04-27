@@ -41,9 +41,13 @@
         android:roundIcon="@drawable/tb1"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Python_TestActivity"
+        <activity android:name=".Main2Activity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.WholeScreen.21"></activity>
+        <activity
+            android:name=".Python_TestActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.WholeScreen.21" />
         <activity
             android:name=".Picture_ViewActivity"
             android:screenOrientation="portrait"

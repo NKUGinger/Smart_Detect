@@ -1,6 +1,7 @@
 package com.example.smart_detect;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,9 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.MemoryFile;
+import android.os.Message;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -34,22 +38,31 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.MemoryHandler;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final String TAG = "MainActivity";
 
@@ -60,8 +73,39 @@ public class MainActivity extends Activity implements View.OnClickListener {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
+    boolean flag = false;
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler()
+    {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if(msg.what == 0x01)
+            {
+                if(msg.obj.equals("OK"))
+                {
+                    display_toolbar = false;
+                }
+                if(display_toolbar != display_toolbar_const)
+                {
+                    if(display_toolbar)
+                    {
+                        display_toolbar();
+                    }
+                    else
+                    {
+                        hide_toolbar();
+                    }
+                    display_toolbar_const = display_toolbar;
+                }
+            }
+        }
+    };
+    public int wait = 0;
+    TextView title,back;
+    boolean display_toolbar = true;
+    boolean display_toolbar_const = true;
     public LinearLayout linearLayout;
-    public Button camera_select_switch;
+    public Button camera_select_switch,take_picture;
     public ImageView picture;
     private AutoFitTextureView textureView;
     // 摄像头ID（通常0代表后置摄像头，1代表前置摄像头）
@@ -134,25 +178,28 @@ public class MainActivity extends Activity implements View.OnClickListener {
         intView();
         Display_Picture(1);
 
+        File file1=new File(getExternalFilesDir(null).toString()+"/Current_Camera_ID.txt");
+        file1.delete();
+        try {
+            file1.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        writeToXML(file1.toString(),"1");
+
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fill_waterdrop_screen();
                 hideBottomUIMenu();
-            }
-        });
-        camera_select_switch.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onClick(View v) {
-                if (mCameraId.equals("1")) {
-                    mCameraId = "3";
-                    Toast.makeText(MainActivity.this, "换成后置摄像头！", Toast.LENGTH_SHORT).show();
+                if(display_toolbar)
+                {
+                    display_toolbar = false;
                 }
                 else
                 {
-                    mCameraId = "1";
-                    Toast.makeText(MainActivity.this,"换成前置摄像头！",Toast.LENGTH_SHORT).show();
+                    display_toolbar = true;
+                    wait = 0;
                 }
             }
         });
@@ -163,6 +210,69 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 startActivity(intent);
             }
         });
+        camera_select_switch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cameraDevice.close();
+                Intent intent = new Intent(MainActivity.this,Main2Activity.class);
+                startActivity(intent);
+                Toast.makeText(MainActivity.this,"已切换至后置摄像头！",Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        take_picture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                captureStillPicture();
+            }
+        });
+        flag=true;
+        Thread thread = new Thread()
+        {
+            @Override
+            public void run() {
+                while (flag)
+                {
+                    if(wait <= 50)
+                    {
+                        wait = wait + 1;
+                    }
+                    if(wait == 51)
+                    {
+                        Message message = new Message();
+                        message.what = 0x01;
+                        message.obj = "OK";
+                        handler.sendMessage(message);
+                        wait = 52;
+                    }
+                    else
+                    {
+                        Message message = new Message();
+                        message.what = 0x01;
+                        message.obj = "NO";
+                        handler.sendMessage(message);
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        flag=false;
     }
 
     public void intView()
@@ -170,17 +280,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
         textureView = (AutoFitTextureView) findViewById(R.id.autoFitTextureView);
         //为该组件设置监听器
         textureView.setSurfaceTextureListener(mSurfaceTextureListener);
-        findViewById(R.id.button).setOnClickListener(this);
+        take_picture=findViewById(R.id.button);
         linearLayout=findViewById(R.id.linearLayout2);
         camera_select_switch=findViewById(R.id.button2);
         picture=findViewById(R.id.imageView);
+        title=findViewById(R.id.textView);
+        back=findViewById(R.id.textView3);
     }
 
     public void Display_Picture(int num)
     {
         File file = new File(getExternalFilesDir(null), "picture"+num+".jpg");
         Bitmap bitmap = BitmapFactory.decodeFile(file+"");
-        bitmap = rotateBitmap(bitmap,-90);
         picture.setImageBitmap(bitmap);
     }
 
@@ -199,12 +310,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
         origin.recycle();
         return newBM;
-    }
-
-    @Override
-    public void onClick(View view)
-    {
-        captureStillPicture();
     }
 
     private void captureStillPicture()
@@ -362,16 +467,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         @Override
                         public void onImageAvailable(ImageReader reader) {
                             // 获取捕获的照片数据
+
                             Image image = reader.acquireNextImage();
                             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                             byte[] bytes = new byte[buffer.remaining()];
                             // 使用IO流将照片写入指定文件
                             File file = new File(getExternalFilesDir(null), "picture1.jpg");
                             buffer.get(bytes);
-                            try (
-                                    FileOutputStream output = new FileOutputStream(file)) {
+                            Bitmap bitmap = Bytes2Bimap(bytes);
+                            bitmap = rotateBitmap(bitmap,-90);
+                            picture.setImageBitmap(bitmap);
+                            bytes = Bitmap2Bytes(bitmap);
+                            try (FileOutputStream output = new FileOutputStream(file))
+                            {
                                 output.write(bytes);
-                                Display_Picture(1);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             } finally {
@@ -461,5 +570,60 @@ public class MainActivity extends Activity implements View.OnClickListener {
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
 
+    }
+
+    //写入文件
+    public static boolean writeToXML(String filepath, String content)
+    {
+        FileOutputStream fileOutputStream;
+        BufferedWriter bufferedWriter;
+        File file = new File(filepath);
+        try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            fileOutputStream = new FileOutputStream(file);
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(fileOutputStream));
+            bufferedWriter.write(content);
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public Bitmap Bytes2Bimap(byte[] b)
+    {
+        if (b.length != 0) {
+            return BitmapFactory.decodeByteArray(b, 0, b.length);
+        } else {
+            return null;
+        }
+    }
+
+    private byte[] Bitmap2Bytes(Bitmap bm)
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        return baos.toByteArray();
+    }
+
+    private void display_toolbar()
+    {
+        title.setVisibility(View.VISIBLE);
+        back.setVisibility(View.VISIBLE);
+        camera_select_switch.setVisibility(View.VISIBLE);
+        picture.setVisibility(View.VISIBLE);
+        take_picture.setVisibility(View.VISIBLE);
+    }
+
+    private void hide_toolbar()
+    {
+        title.setVisibility(View.GONE);
+        back.setVisibility(View.GONE);
+        camera_select_switch.setVisibility(View.GONE);
+        picture.setVisibility(View.GONE);
+        take_picture.setVisibility(View.GONE);
     }
 }

@@ -1,22 +1,59 @@
 package com.example.smart_detect;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.io.File;
 
 public class Picture_ViewActivity extends AppCompatActivity {
-    LinearLayout linearLayout;
+    ConstraintLayout constraintLayout;
     ImageView picture;
+    TextView back,title;
+    boolean flag = false;
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler()
+    {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if(msg.what == 0x01)
+            {
+                if(msg.obj.equals("OK"))
+                {
+                    display_toolbar = false;
+                }
+                if(display_toolbar != display_toolbar_const)
+                {
+                    if(display_toolbar)
+                    {
+                        display_toolbar();
+                    }
+                    else
+                    {
+                        hide_toolbar();
+                    }
+                    display_toolbar_const = display_toolbar;
+                }
+            }
+        }
+    };
+    public int wait = 0;
+    boolean display_toolbar = true;
+    boolean display_toolbar_const = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,44 +64,84 @@ public class Picture_ViewActivity extends AppCompatActivity {
         intView();
         Display_Picture(1);
 
-        linearLayout.setOnClickListener(new View.OnClickListener() {
+        constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fill_waterdrop_screen();
                 hideBottomUIMenu();
+                if(display_toolbar)
+                {
+                    display_toolbar = false;
+                }
+                else
+                {
+                    display_toolbar = true;
+                    wait = 0;
+                }
             }
         });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        flag=true;
+        Thread thread = new Thread()
+        {
+            @Override
+            public void run() {
+                while (flag)
+                {
+                    if(wait <= 50)
+                    {
+                        wait = wait + 1;
+                    }
+                    if(wait == 51)
+                    {
+                        Message message = new Message();
+                        message.what = 0x01;
+                        message.obj = "OK";
+                        handler.sendMessage(message);
+                        wait = 52;
+                    }
+                    else
+                    {
+                        Message message = new Message();
+                        message.what = 0x01;
+                        message.obj = "NO";
+                        handler.sendMessage(message);
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        flag=false;
     }
 
     public void intView()
     {
-        linearLayout=findViewById(R.id.linearLayout3);
+        constraintLayout=findViewById(R.id.constraintlayout);
         picture=findViewById(R.id.imageView2);
+        back=findViewById(R.id.textView3);
+        title=findViewById(R.id.textView2);
     }
 
     public void Display_Picture(int num)
     {
         File file = new File(getExternalFilesDir(null), "picture"+num+".jpg");
         Bitmap bitmap = BitmapFactory.decodeFile(file+"");
-        bitmap = rotateBitmap(bitmap,-90);
         picture.setImageBitmap(bitmap);
-    }
-
-    private Bitmap rotateBitmap(Bitmap origin, float alpha) {
-        if (origin == null) {
-            return null;
-        }
-        int width = origin.getWidth();
-        int height = origin.getHeight();
-        Matrix matrix = new Matrix();
-        matrix.setRotate(alpha);// 围绕原地进行旋转
-        matrix.postScale(-1, 1);   //镜像水平翻转
-        Bitmap newBM = Bitmap.createBitmap(origin, 0, 0, width, height, matrix, false);
-        if (newBM.equals(origin)) {
-            return newBM;
-        }
-        origin.recycle();
-        return newBM;
     }
 
     //隐藏导航栏
@@ -95,6 +172,17 @@ public class Picture_ViewActivity extends AppCompatActivity {
             final View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
+    }
 
+    private void display_toolbar()
+    {
+        back.setVisibility(View.VISIBLE);
+        title.setVisibility(View.VISIBLE);
+    }
+
+    private void hide_toolbar()
+    {
+        back.setVisibility(View.GONE);
+        title.setVisibility(View.GONE);
     }
 }
