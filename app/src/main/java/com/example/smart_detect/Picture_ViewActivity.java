@@ -21,9 +21,9 @@ import android.widget.TextView;
 import java.io.File;
 
 public class Picture_ViewActivity extends AppCompatActivity {
-    ConstraintLayout constraintLayout;
-    ImageView picture;
-    TextView back,title;
+    LinearLayout linearLayout;
+    ImageView picture,back;
+    TextView title;
     boolean flag = false;
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler()
@@ -64,7 +64,7 @@ public class Picture_ViewActivity extends AppCompatActivity {
         intView();
         Display_Picture(1);
 
-        constraintLayout.setOnClickListener(new View.OnClickListener() {
+        linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fill_waterdrop_screen();
@@ -131,10 +131,10 @@ public class Picture_ViewActivity extends AppCompatActivity {
 
     public void intView()
     {
-        constraintLayout=findViewById(R.id.constraintlayout);
+        linearLayout=findViewById(R.id.linearLayout3);
         picture=findViewById(R.id.imageView2);
-        back=findViewById(R.id.textView3);
-        title=findViewById(R.id.textView2);
+        back=findViewById(R.id.imageView3);
+        title=findViewById(R.id.textView);
     }
 
     public void Display_Picture(int num)

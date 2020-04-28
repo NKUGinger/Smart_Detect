@@ -101,12 +101,12 @@ public class MainActivity extends AppCompatActivity {
         }
     };
     public int wait = 0;
-    TextView title,back;
+    public int wait_time = 80;
+    TextView title;
     boolean display_toolbar = true;
     boolean display_toolbar_const = true;
     public LinearLayout linearLayout;
-    public Button camera_select_switch,take_picture;
-    public ImageView picture;
+    public ImageView picture,back,camera_select_switch,take_picture;
     private AutoFitTextureView textureView;
     // 摄像头ID（通常0代表后置摄像头，1代表前置摄像头）
     private String mCameraId = "1";
@@ -239,17 +239,17 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 while (flag)
                 {
-                    if(wait <= 50)
+                    if(wait <= wait_time)
                     {
                         wait = wait + 1;
                     }
-                    if(wait == 51)
+                    if(wait == wait_time + 1)
                     {
                         Message message = new Message();
                         message.what = 0x01;
                         message.obj = "OK";
                         handler.sendMessage(message);
-                        wait = 52;
+                        wait = wait_time + 2;
                     }
                     else
                     {
@@ -280,12 +280,12 @@ public class MainActivity extends AppCompatActivity {
         textureView = (AutoFitTextureView) findViewById(R.id.autoFitTextureView);
         //为该组件设置监听器
         textureView.setSurfaceTextureListener(mSurfaceTextureListener);
-        take_picture=findViewById(R.id.button);
+        take_picture=findViewById(R.id.imageView4);
         linearLayout=findViewById(R.id.linearLayout2);
-        camera_select_switch=findViewById(R.id.button2);
+        camera_select_switch=findViewById(R.id.imageView5);
         picture=findViewById(R.id.imageView);
         title=findViewById(R.id.textView);
-        back=findViewById(R.id.textView3);
+        back=findViewById(R.id.imageView3);
     }
 
     public void Display_Picture(int num)
