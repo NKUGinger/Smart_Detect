@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
     public int wait = 0;
-    public int wait_time = 80;
+    public int wait_time = 70;
     TextView title;
     boolean display_toolbar = true;
     boolean display_toolbar_const = true;
