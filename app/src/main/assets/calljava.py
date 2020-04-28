@@ -1,4 +1,6 @@
-import imp #test load path
+import imp  #test load path
+
 def log(content):
     JavaClass.d("formPython",content)
-    log("Hello Android,form python")
+
+log("Hello Android,form python")
