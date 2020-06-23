@@ -122,7 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/buttonSize1"
-            android:text="1" />
+            android:text="注册" />
     </LinearLayout>
 
 </LinearLayout>

@@ -1,10 +1,15 @@
 package com.example.smart_detect;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -27,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class LoginActivity extends AppCompatActivity {
-    LinearLayout linearLayout;
     TextView tv1;
     TextView tv2;
     TextView tv3;
@@ -38,14 +42,23 @@ public class LoginActivity extends AppCompatActivity {
     CheckBox Remember_Password;
     CheckBox Automatic_Login;
     String rootXMLPath = Environment.getExternalStorageDirectory().getPath()+"/Smart_Detect";
+    boolean flag = false;
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler()
+    {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if(msg.what == 0x01)
+            {
+                fill_waterdrop_screen();
+                hideBottomUIMenu();
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        fill_waterdrop_screen();
-        hideBottomUIMenu();
-
         intView();
         if (readFromXML(rootXMLPath+"/RP_Set.txt").equals("Remember_Password_On"))
         {
@@ -98,15 +111,33 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-        linearLayout.setOnClickListener(new View.OnClickListener() {
+        flag=true;
+        Thread thread = new Thread()
+        {
             @Override
-            public void onClick(View v) {
-                fill_waterdrop_screen();
-                hideBottomUIMenu();
+            public void run() {
+                while (flag)
+                {
+                    Message message = new Message();
+                    message.what = 0x01;
+                    message.obj = "";
+                    handler.sendMessage(message);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        });
+        };
+        thread.start();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        flag=false;
+    }
     //横屏
     private void load_LandScape()
     {
@@ -159,7 +190,6 @@ public class LoginActivity extends AppCompatActivity {
         register=findViewById(R.id.b2);
         Remember_Password=findViewById(R.id.checkBox8);
         Automatic_Login=findViewById(R.id.checkBox9);
-        linearLayout=findViewById(R.id.linearLayout);
     }
 
     //加载记住的账号和密码

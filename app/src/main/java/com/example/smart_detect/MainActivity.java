@@ -31,6 +31,7 @@ import android.os.Message;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -45,6 +46,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainer;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.bottomnavigation.BottomNavigationMenu;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -59,10 +68,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.MemoryHandler;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends AppCompatActivity {
+    ViewPager viewPager;
+    BottomNavigationView bottomNavigationView;
+    List<Fragment> fragments;
+    MenuItem menuItem;
+
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final String TAG = "MainActivity";
 
@@ -81,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg) {
             if(msg.what == 0x01)
             {
+                fill_waterdrop_screen();
                 if(msg.obj.equals("OK"))
                 {
                     display_toolbar = false;
@@ -173,9 +189,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fill_waterdrop_screen();
-        hideBottomUIMenu();
+        fragments=new ArrayList<>();
+        fragments.add(new fragment_homepage());
+        fragments.add(new fragment_discovery());
+        fragments.add(new fragment_community());
+        fragments.add(new fragment_mine());
+        myAdapter adapter = new myAdapter(getSupportFragmentManager(),fragments);
         intView();
+        viewPager.setAdapter(adapter);
         Display_Picture(1);
 
         File file1=new File(getExternalFilesDir(null).toString()+"/Current_Camera_ID.txt");
@@ -187,11 +208,54 @@ public class MainActivity extends AppCompatActivity {
         }
         writeToXML(file1.toString(),"1");
 
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId())
+                {
+                    case R.id.homepage:
+                        viewPager.setCurrentItem(0);
+                        break;
+                    case R.id.discovery:
+                        viewPager.setCurrentItem(1);
+                        break;
+                    case R.id.community:
+                        viewPager.setCurrentItem(2);
+                        break;
+                    case R.id.mine:
+                        viewPager.setCurrentItem(3);
+                        break;
+                }
+                return true;
+            }
+        });
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(menuItem == null)
+                {
+                    menuItem=bottomNavigationView.getMenu().getItem(0);
+                }
+                menuItem.setChecked(false);
+                menuItem=bottomNavigationView.getMenu().getItem(position);
+                menuItem.setChecked(true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fill_waterdrop_screen();
-                hideBottomUIMenu();
                 if(display_toolbar)
                 {
                     display_toolbar = false;
@@ -269,6 +333,26 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
     }
 
+    private class myAdapter extends FragmentPagerAdapter
+    {
+        private List<Fragment>fragments;
+        public myAdapter(@NonNull FragmentManager fm,List<Fragment>fragments) {
+            super(fm);
+            this.fragments = fragments;
+        }
+
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -277,6 +361,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void intView()
     {
+        viewPager = findViewById(R.id.viewPager1);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         textureView = (AutoFitTextureView) findViewById(R.id.autoFitTextureView);
         //为该组件设置监听器
         textureView.setSurfaceTextureListener(mSurfaceTextureListener);
