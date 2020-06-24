@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:id="@+id/linearLayout2"
+    android:background="#000000"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -44,14 +45,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="50px"
             android:text="你看起来很开心"
-            android:textColor="#FFFF00"
-            android:textSize="25dp" />
+            android:textColor="#FFFFFF"
+            android:textSize="15dp" />
     </LinearLayout>
 
     <com.example.smart_detect.AutoFitTextureView
         android:id="@+id/autoFitTextureView"
         android:layout_width="match_parent"
-        android:layout_height="1400px"/>
+        android:layout_height="1420px"/>
 
     <LinearLayout
         android:background="#000000"

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
@@ -97,6 +98,14 @@ public class MainActivity extends AppCompatActivity {
             if(msg.what == 0x01)
             {
                 fill_waterdrop_screen();
+                if(bottomNavigationView.getVisibility()==View.GONE)
+                {
+                    hideBottomUIMenu();
+                }
+                else
+                {
+                    displayBottomUIMenu();
+                }
                 if(msg.obj.equals("OK"))
                 {
                     display_toolbar = false;
@@ -117,10 +126,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
     public int wait = 0;
-    public int wait_time = 70;
-    TextView title;
+    public int wait_time = 100;
     boolean display_toolbar = true;
     boolean display_toolbar_const = true;
+    TextView title;
     public LinearLayout linearLayout;
     public ImageView picture,back,camera_select_switch,take_picture;
     private AutoFitTextureView textureView;
@@ -218,12 +227,18 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.discovery:
                         viewPager.setCurrentItem(1);
+                        bottomNavigationView.setVisibility(View.VISIBLE);
+                        bottomNavigationView.setBackgroundColor(Color.parseColor("#FFFFFF"));
                         break;
                     case R.id.community:
                         viewPager.setCurrentItem(2);
+                        bottomNavigationView.setVisibility(View.VISIBLE);
+                        bottomNavigationView.setBackgroundColor(Color.parseColor("#FFFFFF"));
                         break;
                     case R.id.mine:
                         viewPager.setCurrentItem(3);
+                        bottomNavigationView.setVisibility(View.VISIBLE);
+                        bottomNavigationView.setBackgroundColor(Color.parseColor("#FFFFFF"));
                         break;
                 }
                 return true;
@@ -245,6 +260,11 @@ public class MainActivity extends AppCompatActivity {
                 menuItem.setChecked(false);
                 menuItem=bottomNavigationView.getMenu().getItem(position);
                 menuItem.setChecked(true);
+                if(position!=0)
+                {
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                    bottomNavigationView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                }
             }
 
             @Override
@@ -323,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                         handler.sendMessage(message);
                     }
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(50);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -627,22 +647,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //隐藏导航栏
-    private void hideBottomUIMenu()
-    {
-        //隐藏虚拟按键，并且全屏
-        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
-            View v = this.getWindow().getDecorView();
-            v.setSystemUiVisibility(View.GONE);
-        } else if (Build.VERSION.SDK_INT >= 19) {
-            //for new api versions.
-            View decorView = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-    }
-
     //填满水滴屏
     private void fill_waterdrop_screen()
     {
@@ -712,4 +716,36 @@ public class MainActivity extends AppCompatActivity {
         picture.setVisibility(View.GONE);
         take_picture.setVisibility(View.GONE);
     }
+
+    //隐藏导航栏
+    private void hideBottomUIMenu()
+    {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+    //隐藏导航栏
+    private void displayBottomUIMenu()
+    {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.VISIBLE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
 }

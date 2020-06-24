@@ -298,14 +298,14 @@ public class LoginActivity extends AppCompatActivity {
                             writeToXML(rootXMLPath+"/RP_Set.txt","Remember_Password_Off");
                         }
                         tv3.setText("密码正确，登录成功！");
-                        if (readFromXML(getExternalFilesDir(null).toString()+"/Current_Camera_ID.txt").equals("1"))
+                        if (readFromXML(getExternalFilesDir(null).toString()+"/Current_Camera_ID.txt").equals("4"))
                         {
-                            Intent intent1 = new Intent(LoginActivity.this , MainActivity.class);
+                            Intent intent1 = new Intent(LoginActivity.this , Main2Activity.class);
                             startActivity(intent1);
                         }
                         else
                         {
-                            Intent intent1 = new Intent(LoginActivity.this , Main2Activity.class);
+                            Intent intent1 = new Intent(LoginActivity.this , MainActivity.class);
                             startActivity(intent1);
                         }
                     }
