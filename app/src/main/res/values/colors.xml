@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">#2A99F1</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#704EAA</color>
     <color name="textColor1">#FF0000</color>
     <color name="textColor2">#000000</color>
     <color name="buttonColor1">#000000</color>
+    <color name="StatusBarColor1">#FFFFFF</color>
 </resources>

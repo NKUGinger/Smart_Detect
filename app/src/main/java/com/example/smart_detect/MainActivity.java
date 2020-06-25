@@ -3,6 +3,7 @@ package com.example.smart_detect;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.StatusBarManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,8 +28,11 @@ import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.MemoryFile;
 import android.os.Message;
+import android.os.MessageQueue;
+import android.telecom.StatusHints;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -36,6 +40,8 @@ import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -43,10 +49,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainer;
 import androidx.fragment.app.FragmentManager;
@@ -125,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    public String status_color = "#2A99F1";
     public int wait = 0;
     public int wait_time = 100;
     boolean display_toolbar = true;
@@ -193,9 +203,11 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarUtils.setStatusColor(this,Color.parseColor("#000000"));
         setContentView(R.layout.activity_main);
 
         fragments=new ArrayList<>();
@@ -224,21 +236,25 @@ public class MainActivity extends AppCompatActivity {
                 {
                     case R.id.homepage:
                         viewPager.setCurrentItem(0);
+                        StatusBarUtils.setStatusColor(MainActivity.this,Color.parseColor("#000000"));
                         break;
                     case R.id.discovery:
                         viewPager.setCurrentItem(1);
                         bottomNavigationView.setVisibility(View.VISIBLE);
                         bottomNavigationView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        StatusBarUtils.setStatusColor(MainActivity.this,Color.parseColor(status_color));
                         break;
                     case R.id.community:
                         viewPager.setCurrentItem(2);
                         bottomNavigationView.setVisibility(View.VISIBLE);
                         bottomNavigationView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        StatusBarUtils.setStatusColor(MainActivity.this,Color.parseColor(status_color));
                         break;
                     case R.id.mine:
                         viewPager.setCurrentItem(3);
                         bottomNavigationView.setVisibility(View.VISIBLE);
                         bottomNavigationView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        StatusBarUtils.setStatusColor(MainActivity.this,Color.parseColor(status_color));
                         break;
                 }
                 return true;
@@ -264,6 +280,11 @@ public class MainActivity extends AppCompatActivity {
                 {
                     bottomNavigationView.setVisibility(View.VISIBLE);
                     bottomNavigationView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    StatusBarUtils.setStatusColor(MainActivity.this, Color.parseColor(status_color));
+                }
+                else
+                {
+                    StatusBarUtils.setStatusColor(MainActivity.this,Color.parseColor("#000000"));
                 }
             }
 
@@ -392,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
         picture=findViewById(R.id.imageView);
         title=findViewById(R.id.textView);
         back=findViewById(R.id.imageView3);
+
     }
 
     public void Display_Picture(int num)
@@ -727,8 +749,11 @@ public class MainActivity extends AppCompatActivity {
         } else if (Build.VERSION.SDK_INT >= 19) {
             //for new api versions.
             View decorView = getWindow().getDecorView();
+            //int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
@@ -747,5 +772,4 @@ public class MainActivity extends AppCompatActivity {
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
-
 }
