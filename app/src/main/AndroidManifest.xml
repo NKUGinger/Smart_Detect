@@ -38,7 +38,7 @@
         android:allowBackup="true"
         android:icon="@drawable/tb20"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/tb1"
+        android:roundIcon="@drawable/tb20"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Main2Activity"

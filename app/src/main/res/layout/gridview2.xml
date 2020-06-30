@@ -7,15 +7,16 @@
     android:gravity="center">
 
     <ImageView
+        android:layout_marginBottom="3dp"
         android:layout_gravity="center"
         android:id="@+id/imageView14"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         app:srcCompat="@drawable/tb1"
         />
 
     <TextView
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="3dp"
         android:layout_gravity="center"
         android:textSize="12dp"
         android:textColor="#000000"

@@ -7,4 +7,9 @@
     <color name="textColor2">#000000</color>
     <color name="buttonColor1">#000000</color>
     <color name="StatusBarColor1">#FFFFFF</color>
+    <color name="GreenColor1">#61A712</color>
+    <color name="GoldColor1">#F7C430</color>
+    <color name="GrayColor1">#8111110F</color>
+    <color name="PinkColor1">#DF107B</color>
+    <color name="RedColor1">#F76031</color>
 </resources>

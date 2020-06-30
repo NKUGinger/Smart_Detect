@@ -29,7 +29,7 @@ public class fragment_discovery extends Fragment {
     SimpleAdapter adapter;
     String[] titles2=new String[]{"南开大学建校100周年", "南开大学建校100周年", "南开大学建校100周年", "南开大学建校100周年", "南开大学建校100周年", "南开大学建校100周年", "南开大学建校100周年", "南开大学建校100周年"};
     String[] contents2=new String[]{"热烈庆祝南开大学建校100周年！","热烈庆祝南开大学建校100周年！","热烈庆祝南开大学建校100周年！","热烈庆祝南开大学建校100周年！","热烈庆祝南开大学建校100周年！","热烈庆祝南开大学建校100周年！","热烈庆祝南开大学建校100周年！","热烈庆祝南开大学建校100周年！"};
-    int[] images2 = new int[]{R.drawable.l1, R.drawable.l2, R.drawable.l3, R.drawable.l4, R.drawable.l5, R.drawable.l6, R.drawable.l7, R.drawable.l8};
+    int[] images2 = new int[]{R.drawable.b1, R.drawable.b1, R.drawable.b1, R.drawable.b1, R.drawable.b1, R.drawable.b1, R.drawable.b1, R.drawable.b1};
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

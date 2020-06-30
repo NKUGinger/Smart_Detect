@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/b11"
+    android:background="@drawable/b1"
     tools:context=".LoginActivity">
 
     <LinearLayout
